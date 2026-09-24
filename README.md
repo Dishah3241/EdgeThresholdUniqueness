@@ -10,7 +10,9 @@ isolated vertex, and no unit-distance representation in `ℝᵈ` is isomorphic t
 > ([FKSEdgeThreshold](https://github.com/Dishah3241/FKSEdgeThreshold) formalizes that theorem). This
 > repository proves that for `d ≥ 6`, up to isolated vertices, `K_{d+2}` is the only graph at the
 > threshold. At `d = 4` it is not: `K₁,₃,₃` also has 15 edges and no representation in `ℝ⁴`
-> (Chaffee and Noble). To our knowledge this statement has not appeared in the literature before.
+> (Chaffee and Noble). Chaffee and Noble also settle `d = 5`, where `K₇` is the only such graph;
+> this repository covers every `d ≥ 6`. To our knowledge this statement has not appeared in the
+> literature before.
 
 | | |
 |---|---|
@@ -46,7 +48,7 @@ def UniqueKComplete : Prop :=
 The library reruns the case analysis of Frankl, Kupavskii and Swanepoel's induction once more, with
 the edge budget raised to exactly `C(d + 2, 2)`, on top of their statement for dimension `d − 1`.
 Every count in their proof has slack `d − 4`, except one with slack `d − 5`, so at `d ≥ 6` each branch
-either places the graph or forces `K_{d+2}`. Three pieces of geometry are new relative to their proof:
+either places the graph or forces `K_{d+2}`. Three pieces of geometry are added to their proof:
 a tail of up to three extra edges attached to two unit simplices sharing a facet, vertices attached
 over cliques of a regular simplex, and a bound on the circumradius of the triangles those need. A
 tempting general version of that bound is false; the proof uses only the special triangles that

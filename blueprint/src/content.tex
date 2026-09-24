@@ -4,7 +4,7 @@
 % Stage 2 blueprint for rung 4 of ADR 0004: the equality case of the
 % Frankl--Kupavskii--Swanepoel threshold. It runs the branch lemmas of rung 3's blueprint
 % (projects/FKSEdgeThreshold, FKS Theorem 3) once at the budget C(d+2, 2) instead of
-% g(d), with the new geometry that this requires.
+% g(d), with the geometry this adds to their proof.
 %
 % Nodes inherited from rung 3 are stated in condensed form, with their \lean{} names. Every
 % node below is grounded either in Frankl, Kupavskii and Swanepoel, "Embedding graphs in
@@ -412,8 +412,8 @@ $b = m(d)$ on top of $S(d-1)$. Nothing in the step is proved twice.
 
 The branches of Section~\ref{sec:induction}, re-run at $b = m(d)$ for $d \ge 6$. Every count
 in the induction step has excess $d - 4$ over the budget, except Case 2 with $d - 5$ (A23),
-so at $b = m(d)$ each branch closes with the new geometry of
-Section~\ref{sec:equality-geometry}. Each lemma below states
+so at $b = m(d)$ each branch closes with the geometry of
+Section~\ref{sec:equality-geometry}, which is added to their proof. Each lemma below states
 its budget hypotheses explicitly, in the form the library proves them.
 
 \begin{lemma}[The spherical branch at $b = m(d)$]
@@ -498,9 +498,10 @@ its budget hypotheses explicitly, in the form the library proves them.
   knowledge this equality case has not previously been stated; the argument is the
   Frankl--Kupavskii--Swanepoel induction run at $b = m(d)$, with the corrections A36 and
   A37 recorded at Lemma~\ref{lem:two-apices}, Lemma~\ref{lem:simplex-attach} and
-  Section~\ref{sec:equality-budget}. At $d = 5$ the same induction also closes: Case 2's
-  equality graph is impossible by maximum degree, so uniqueness at $d = 5$ needs no new
-  coordinates (A37); only $d = 4$ genuinely fails, where $K_{3,3,1}$ escapes.
+  Section~\ref{sec:equality-budget}. Uniqueness at $d = 5$ is Chaffee and Noble's (2017),
+  and is not formalized here; a review of this argument (A37) indicates that the same induction
+  would also close at $d = 5$, but that remark is not kernel-checked. At $d = 4$ the statement
+  fails: $K_{3,3,1}$ is a second extremal graph.
 \end{theorem}
 
 \begin{theorem}[The Palomar statement]

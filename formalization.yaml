@@ -167,7 +167,13 @@ limitations: >-
   Frankl–Kupavskii–Swanepoel 2020, so this is "to our knowledge", not a claim of priority.
 
 review:
-  status: "unchecked"    # unchecked, agent-reviewed, self-assessed, peer-reviewed or author-verified
+  status: "agent-reviewed"    # unchecked, agent-reviewed, self-assessed, peer-reviewed or author-verified
   reviewers: []
   notes: >-
-    The owner has not signed off the statement. Compass comes after this integration.
+    An independent read-only review by Claude Opus 5.5 (run 20260924-093438-baef076b), saved as
+    docs/review-2026-09-24.md: no mathematical or statement defect, every hypothesis of the main
+    theorem used, no case missing; verdict "publish after fixes", with the fixes applied. That
+    reviewer's lineage wrote no proof, but the managing agent (also Claude) did the informal
+    re-derivation, the @[expose] edit and the Compass, so it is not fully independent of Claude.
+    The owner signed the Compass list, docs/compass.md, on 2026-09-24, freezing the statement.
+    Comparator accepts under the Lean and NanoDa kernels (docs/comparator-2026-09-24.md).
