@@ -32,32 +32,22 @@ classification:            # one to eight codes from Palomar's taxonomy snapshot
 # `type` is one of paper, book, web discussion, folklore, original-proof or other. At least one
 # source must formalize, adapt or independently prove the result, which makes it source-based.
 sources:
-  - title: "Stage 0 — does the FKS induction give uniqueness at C(d+2,2) edges?"
-    id: "file:///Users/dishant/Code/Math/docs/research/2026-09-22-stage0-end-problem-uniqueness.md"
-    type: "other"
+  - title: "Uniqueness at C(d+2,2) edges: the argument and its formal proof"
+    id: "https://github.com/Dishah3241/GraphDimension/blob/103e26bc705a61f93ef7985c74498668cbdf7e01/GraphDimension/Extremal/FKS/Uniqueness.lean"
+    type: "original-proof"
     location: >-
-      The sketch as a whole; the equality-count case analysis and the calibration for d = 5 and
-      d ≥ 6
-    relationship: "adapts"
+      GraphDimension at 103e26bc705a61f93ef7985c74498668cbdf7e01: Extremal/FKS/Uniqueness.lean and
+      EqualityBranches.lean, on top of FKS Theorem 3 (Extremal/FKS/Theorem3.lean)
+    relationship: "formalizes"
     author_endorsement: "n/a"
     note: >-
-      Informal argument that the FKS induction, with the budget raised to C(d + 2, 2), leaves
-      only K_{d+2} plus isolated vertices. The sketch states this for every d ≥ 5. The frozen
-      statement is the d ≥ 6 case, with the no-isolated-vertex hypothesis. Run
-      20260922-160618-c2949ba8.
-  - title: "Independent check of the end-problem sketch"
-    id: "file:///Users/dishant/Code/Math/docs/research/2026-09-22-independent-check-end-problem.md"
-    type: "other"
-    location: >-
-      The branch table for d ≥ 6, and the numerical script
-      docs/research/2026-09-22-independent-check-end-problem.py
-    relationship: "independently-proves"
-    author_endorsement: "n/a"
-    note: >-
-      Re-derivation of each branch against the TeX proof of Frankl–Kupavskii–Swanepoel
-      Theorem 3. The verdict in that note is that the argument holds for every d ≥ 6, using
-      S(d − 1) as written. It treats d = 5 as the Chaffee–Noble classification and does not
-      re-check the d = 5 Case 2 construction. The check is informal.
+      The argument reruns the Frankl–Kupavskii–Swanepoel induction with the edge budget raised to
+      C(d + 2, 2), on top of their statement S(d − 1). It was sketched informally in this project's
+      Stage 0 (an AI-written note, run 20260922-160618-c2949ba8), re-derived independently by a
+      second model lineage, and red-teamed by a third, which found the sketch's general
+      circumradius lemma false and replaced it by the special case the proof needs. The Lean proof
+      is the authority; the informal notes are not published sources. To our knowledge the
+      statement has not previously been stated in the literature; see the limitations.
   - title: "Embedding graphs in Euclidean space"
     authors:
       - "Nóra Frankl"
@@ -138,31 +128,43 @@ automation:
         EdgeThresholdUniqueness.Stage1.Equivalence, and run 20260923-210229-2ed318a5 finished
         the proof that Statement A and Statement B agree.
     - method: "agent"
-      models: ["not evidenced"]
-      framework: "not evidenced"
+      models: ["claude-opus-5-5"]
+      framework: "Claude Code"
       tool_setup: >-
-        Manager fix. Commit c3f8fd3 marks Statement B's definitions with @[expose], as Statement
-        A already does, so the Stage 1 equivalence can unfold them. The commit message records
-        no change of meaning. harness/run-model was not applied to a run id for this commit, so
-        no model name is recorded here.
+        The managing agent, directed by the human maintainer: the plan and the blueprint, every
+        worker brief, the verification and landing of every run, the @[expose] fix to Statement B
+        (c3f8fd3), the pin, the Comparator record, and the Compass list.
     - method: "agent"
-      models: ["not evidenced"]
+      models: ["Grok 4.7 256K Extra High"]
       framework: "Cursor"
       tool_setup: >-
         This repository: the inlined statement, the proof siblings, Solution.lean, and the
-        gates. Run 20260923-211058-10818035. harness/run-model prints "not evidenced" for that
-        run id.
+        gates. Run 20260923-211058-10818035; the model is recorded in that run's events.jsonl.
+    - method: "agent"
+      models: ["gpt-6-astra"]
+      framework: "Codex"
+      tool_setup: >-
+        The proof in GraphDimension: Lemma T (20260923-175537-57972970) and the uniqueness theorem
+        with its equality-budget branches (20260923-180818-cc3ee1be), on the FKS Theorem 3
+        development listed in FKSEdgeThreshold's formalization.yaml.
+    - method: "agent"
+      models: ["glm-5.3-flash"]
+      framework: "pi"
+      tool_setup: >-
+        In GraphDimension, dispatched by the Temporal orchestrator: the repaired circumradius lemma
+        (20260923-161743-90a17ebf) and the clique re-attachment lemma (20260923-165142-6522f0c9).
+        In this repository: the Stage 2 blueprint (20260924-012741-74feafae).
   spend_usd: "subscription-based usage"
   notes: >-
-    The proof lives in the GraphDimension library, required as the sibling path dependency
-    ../GraphDimension. The 40-character pin comes at publication. The owner has not signed off
-    the statement; Compass comes after this integration. Model names above are the output of
-    harness/run-model, except the two entries marked not evidenced.
+    The proof lives in the GraphDimension library, required as a git dependency pinned to
+    103e26bc705a61f93ef7985c74498668cbdf7e01. Model names are the output of harness/run-model,
+    except the integration run, whose model is taken from its own events.jsonl.
 
 limitations: >-
   The frozen statement is the d ≥ 6 equality case for finite simple graphs with no isolated
-  vertex. It does not include d = 5, the inequality theorem, or the spherical clause. The proof
-  depends on GraphDimension at the sibling path ../GraphDimension, not at a pinned revision.
+  vertex. It does not include d = 5, the inequality theorem, or the spherical clause. A literature
+  search did not find this statement stated before; the search could not read every work citing
+  Frankl–Kupavskii–Swanepoel 2020, so this is "to our knowledge", not a claim of priority.
 
 review:
   status: "unchecked"    # unchecked, agent-reviewed, self-assessed, peer-reviewed or author-verified
