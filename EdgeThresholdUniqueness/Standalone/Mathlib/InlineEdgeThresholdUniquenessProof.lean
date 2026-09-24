@@ -15,6 +15,7 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.FinCases
@@ -695,6 +696,31 @@ private lemma placeStar_dist (u v : Fin 4) (huv : star3.Adj u v) :
     rw [_root_.dist_comm, dist_fin1]
     simp [placeStar, hu0, lineAt]
 
+private instance : DecidableRel (pathGraph 29).Adj := fun u v =>
+  decidable_of_iff (u.val + 1 = v.val ∨ v.val + 1 = u.val) pathGraph_adj.symm
+
+/-- The path with `28` edges, on `29` vertices, has `(6 + 2)` choose `2` edges. -/
+theorem ncard_pathGraph29 : (pathGraph 29).edgeSet.ncard = (6 + 2).choose 2 := by
+  have h : (pathGraph 29).edgeSet.ncard = 28 := by
+    have hc : Finset.card (pathGraph 29).edgeFinset = 28 := by decide
+    rwa [edgeFinset_card, Set.fintypeCard_eq_ncard] at hc
+  rw [h]
+  decide
+
+/-- Every vertex of the path with `28` edges has a neighbor. -/
+theorem pathGraph29_exists_adj (v : Fin 29) : ∃ w, (pathGraph 29).Adj v w := by
+  by_cases hv : v = 28
+  · subst hv
+    refine ⟨27, ?_⟩
+    rw [pathGraph_adj]
+    decide
+  · refine ⟨⟨v.val + 1, ?_⟩, ?_⟩
+    · have hvlt := v.isLt
+      have hv28 : v.val ≠ 28 := fun h => hv (Fin.ext h)
+      omega
+    · rw [pathGraph_adj]
+      exact Or.inl rfl
+
 end EdgeThresholdUniqueness.Bridge
 
 namespace EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness
@@ -769,7 +795,7 @@ theorem UniqueKComplete.dropHdeg.proof : UniqueKComplete.dropHdeg := by
 
 theorem UniqueKComplete.dropHrep.proof : UniqueKComplete.dropHrep := by
   intro hyp
-  exact not_iso_complete (by decide : 29 ≠ 6 + 2) star28
-    (hyp 6 (by decide) 29 star28 ncard_star28 star28_exists_adj)
+  exact not_iso_complete (by decide : 29 ≠ 6 + 2) (pathGraph 29)
+    (hyp 6 (by decide) 29 (pathGraph 29) ncard_pathGraph29 pathGraph29_exists_adj)
 
 end EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness
