@@ -1,35 +1,520 @@
 % The actual content of the blueprint, used by both the web and print versions.
 % Do not include \begin{document}.
 %
-% Each node carries:
-%   \lean{Full.Declaration.Name}  the Lean declaration this node IS
-%   \leanok                        this node is fully formalized
-%   \uses{label, ...}              its immediate dependencies
+% Stage 2 blueprint for rung 4 of ADR 0004: the equality case of the
+% Frankl--Kupavskii--Swanepoel threshold. It runs the branch lemmas of rung 3's blueprint
+% (projects/FKSEdgeThreshold, FKS Theorem 3) once at the budget C(d+2, 2) instead of
+% g(d), with the new geometry that this requires.
 %
-% `leanblueprint checkdecls` verifies every \lean{...} names a declaration that actually exists
-% in the built project. That check is what keeps this document from drifting away from the Lean,
-% so never write a \lean{} you have not built, and run it before every push.
+% Nodes inherited from rung 3 are stated in condensed form, with their \lean{} names. Every
+% node below is grounded either in Frankl, Kupavskii and Swanepoel, "Embedding graphs in
+% Euclidean space", JCTA 171 (2020) 105146, arXiv 1802.03092 (line numbers are to its LaTeX
+% source, main.tex), or in this repository's own statement files. The general results live
+% in the shared library GraphDimension, which this project imports through Solution.lean;
+% their \lean{} names are library declarations. The statement side lives in this
+% repository: the inlined Palomar statement
+% (EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness), its proof
+% sibling, and the advertised target in Solution.lean.
+%
+% \lean{...} names the declaration that proves the node; `leanblueprint checkdecls` (here:
+% `lake exe checkdecls` on the extracted names) verifies it exists in the project's
+% environment. Every node below is proved, so each carries \leanok.
+%
+% The corrections from the review of the argument are recorded where they bite: finding
+% A36 (the false general form of Lemma R) at Lemma~\ref{lem:two-apices}, and the review
+% points of A37 at Lemma~\ref{lem:simplex-attach}, the equality branches of
+% Section~\ref{sec:equality-budget}, and Theorem~\ref{thm:uniqueness}.
 
 \chapter{Uniqueness of $K_{d+2}$ at $\binom{d+2}{2}$ edges for $d \ge 6$}
 
-\begin{definition}[Pairwise coprimality]
-  \label{def:pairwise-coprime}
-  \lean{EdgeThresholdUniqueness.Standalone.Mathlib.PairwiseCoprime}
+\section{Notation}
+
+$f(d)$ is the least number of edges of a graph that is not realizable in $\mathbb{R}^d$
+(Frankl--Kupavskii--Swanepoel, l.~82). Write $m(d) = \binom{d+2}{2}$ and
+$g(2) = 3$, $g(3) = 8$, $g(d) = m(d) - 1$ for $d \ge 4$ (l.~343). $\mathbb{S}^{d-1}$ is the
+sphere of radius $1/\sqrt 2$ about the origin of $\mathbb{R}^d$ (l.~57). $S(k)$ is the
+statement Frankl--Kupavskii--Swanepoel induct on (l.~344): every graph with at most $g(k)$
+edges is realizable in $\mathbb{R}^k$, and every graph with at most $g(k)$ edges that avoids
+$K_{k+1}$ and $K_{k+2} - K_3$ is realizable on $\mathbb{S}^{k-1}$. ``Contains'' and
+``avoids'' always refer to ordinary subgraphs, not induced ones. Throughout,
+$H$ is the $(d-1)$-core of the graph under discussion (Lemma~\ref{lem:core}).
+
+\section{Realizability}
+
+\begin{definition}[Realizability in Euclidean space]
+  \label{def:representable}
+  \lean{EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UnitDistanceRepresentable, SimpleGraph.UnitDistEmbeddable, EdgeThresholdUniqueness.Bridge.unitDistanceRepresentable_iff}
   \leanok
-  A finite set of naturals is \emph{pairwise coprime} when any two distinct elements are coprime.
+  A graph $G$ is \emph{realizable in $\mathbb{R}^n$} when there is an injective
+  $f : V(G) \to \mathbb{R}^n$ with $\lVert f(u) - f(v)\rVert = 1$ for every edge $uv$
+  (Frankl--Kupavskii--Swanepoel l.~55--57). Non-adjacent vertices are unconstrained: a
+  non-edge may also land at distance one. The Palomar statement's inlined definition and
+  the library's agree by \texttt{Iff.rfl} (\texttt{unitDistanceRepresentable\_iff}).
 \end{definition}
 
-\begin{lemma}[Small primes are pairwise coprime]
-  \label{lem:small-primes-coprime}
-  \lean{EdgeThresholdUniqueness.Standalone.Mathlib.SmallPrimesCoprime}
+\begin{lemma}[Monotonicity]
+  \label{lem:monotone}
+  \lean{SimpleGraph.UnitDistEmbeddable.of_le, SimpleGraph.UnitDistEmbeddable.comap, SimpleGraph.UnitDistEmbeddable.of_embedding, SimpleGraph.UnitDistEmbeddable.of_iso}
   \leanok
-  \uses{def:pairwise-coprime}
-  The set $\{2, 3, 5\}$ is pairwise coprime.
+  \uses{def:representable}
+  A subgraph of a graph realizable in $\mathbb{R}^n$ is realizable in $\mathbb{R}^n$, and so
+  is an injective homomorphic preimage: the placement transports along graph homomorphisms,
+  embeddings, and isomorphisms.
 \end{lemma}
 
-\begin{proof}
+\begin{lemma}[$K_{d+2}$ has no realization in $\mathbb{R}^d$; FKS Lemma 14]
+  \label{lem:complete-lower}
+  \lean{EuclideanGeometry.card_le_of_equilateral, SimpleGraph.hasUnitDistDim_completeGraph, EdgeThresholdUniqueness.Bridge.not_unitDistEmbeddable_complete_of_lt, EdgeThresholdUniqueness.Bridge.ncard_edgeSet_completeGraph, EdgeThresholdUniqueness.Bridge.completeGraph_exists_adj}
   \leanok
-  \uses{def:pairwise-coprime}
-  Each pair is distinct and shares no prime factor, so the claim is decidable and holds by
-  computation.
-\end{proof}
+  \uses{def:representable}
+  At most $d + 1$ points of $\mathbb{R}^d$ are pairwise at distance one, so $K_{d+2}$ has no
+  realization in $\mathbb{R}^d$. FKS introduction (l.~85) calls it clear; it is what makes
+  the equality case non-vacuous, since $K_{d+2}$ has exactly $m(d)$ edges and no isolated
+  vertex. This is also what rules out $K_{d+2}$'s supergraphs, which carry more edges.
+\end{lemma}
+
+\section{Spherical placements}
+
+Condensed from rung 3; rung 4 reuses each of them inside the equality-budget branches.
+
+\begin{definition}[Realizability on the sphere; FKS Definition 2]
+  \label{lem:sphere-orth}
+  \lean{SimpleGraph.SphereEmbeddable, SimpleGraph.SphereEmbeddable.iff_orthogonal, SimpleGraph.SphereEmbeddable.toUnitDist, SimpleGraph.SphereEmbeddable.of_le}
+  \leanok
+  \uses{def:representable}
+  A graph is \emph{realizable on $\mathbb{S}^{d-1}$} when it has an injective placement on
+  the sphere of radius $1/\sqrt 2$ putting every edge at distance one. For
+  $\lvert x\rvert = \lvert y\rvert = 1/\sqrt 2$, one has $\lvert x - y\rvert = 1$ if and
+  only if $\langle x, y\rangle = 0$, and a placement on $\mathbb{S}^{d-1}$ is in particular
+  a realization in $\mathbb{R}^d$.
+\end{definition}
+
+\begin{lemma}[Poles]
+  \label{lem:poles}
+  \lean{SimpleGraph.SphereEmbeddable.pole, SimpleGraph.SphereEmbeddable.poles}
+  \leanok
+  \uses{lem:sphere-orth}
+  If $G - v - w$ is on $\mathbb{S}^{d-2}$ and $vw$ is not an edge, then $G$ is on
+  $\mathbb{S}^{d-1}$: the section sits in a hyperplane, and $v, w$ go to its two poles. The
+  one-vertex version, for any vertex, is the same. FKS l.~384--394. The two-vertex form
+  needs $v \ne w$ (A37).
+\end{lemma}
+
+\begin{lemma}[The $(d-1)$-core]
+  \label{lem:core}
+  \lean{SimpleGraph.exists_core, SimpleGraph.exists_core_subset, SimpleGraph.exists_core_maximal, SimpleGraph.induce_edgeFinset_card_le, SimpleGraph.ncard_edgeSet_induce_ne, SimpleGraph.ncard_edgeSet_induce_ne_pair}
+  \leanok
+  Repeatedly delete a vertex of degree at most $d - 2$. The result $H$, the $(d-1)$-core, is
+  an induced subgraph of minimum degree at least $d - 1$ (possibly empty) and does not depend
+  on the order: it is the maximal vertex set all of whose vertices have more than $d - 2$
+  neighbours inside it. The deleted vertices come with an order in which each has at most
+  $d - 2$ neighbours among $H$ and the later-deleted vertices --- the order is part of the
+  data, since a pruned vertex's original degree can exceed $d - 2$ (A37) --- and deleting
+  $v$, or the pair $v, w$, accounts for exactly the edges meeting the deleted vertices.
+\end{lemma}
+
+\begin{corollary}[Re-attaching the pruned vertices; FKS Corollary 12]
+  \label{cor:degenerate}
+  \lean{SimpleGraph.SphereEmbeddable.exists_core, SimpleGraph.SphereEmbeddable.exists_core_subset, SimpleGraph.SphereEmbeddable.of_degenerate}
+  \leanok
+  \uses{lem:core, lem:sphere-orth}
+  If the core $H$ is on $\mathbb{S}^{d-1}$, so is $G$; if $H$ is empty, $G$ is on
+  $\mathbb{S}^{d-1}$. The same principle extends a placement of the core to any vertex set
+  containing it, which is how the branches below re-attach a deleted vertex to a placed
+  $H - v$.
+\end{corollary}
+
+\begin{lemma}[Cross-polytope; FKS Lemma 13, repaired as Lemma M]
+  \label{lem:cross}
+  \lean{SimpleGraph.SphereEmbeddable.of_compl_matching}
+  \leanok
+  \uses{lem:sphere-orth}
+  If $k \le d$ and the complement of $H$, a graph on $d + k$ vertices, has $k$ disjoint
+  edges, then $H$ is on $\mathbb{S}^{d-1}$: the $i$-th pair goes to $\pm e_i/\sqrt 2$, the
+  other vertices to the unused $e_j$. The written proof treats only $k = d$ (l.~335); the
+  uses below are $k \le 3$.
+\end{lemma}
+
+\begin{proposition}[FKS Proposition 2]
+  \label{prop:maxdeg}
+  \lean{SimpleGraph.SphereEmbeddable.of_degree_le, SimpleGraph.exists_partition_maxDegree_le}
+  \leanok
+  \uses{lem:sphere-orth}
+  Let $d \ge 2$. A graph of maximum degree at most $d - 1$ is on $\mathbb{S}^{d-1}$.
+  Induction on $d$ through Lov\'asz's 1966 partition lemma (\texttt{exists\_partition\_maxDegree\_le}),
+  with bases $d = 2$ and $d = 3$. FKS l.~77, 122--125.
+\end{proposition}
+
+\section{Placements in $\mathbb{R}^d$ off the sphere}
+
+\begin{lemma}[Two simplices on a facet; Lemma S]
+  \label{lem:two-simplices}
+  \lean{SimpleGraph.exists_twoSimplices_placement}
+  \leanok
+  \uses{def:representable}
+  On $d + 2$ vertices with a fixed pair $\{a, b\}$, every graph without the edge $ab$ is
+  realizable in $\mathbb{R}^d$: two unit regular $d$-simplices sharing a facet, with apexes
+  $a$ and $b$ at distance $\sqrt{2 + 2/d} < 2$. That is the diameter; every other pair is at
+  distance one. FKS l.~355--356.
+\end{lemma}
+
+\begin{lemma}[Attaching a low-degree tail, $t \le 2$]
+  \label{lem:tail}
+  \lean{SimpleGraph.UnitDistEmbeddable.extend_tail}
+  \leanok
+  \uses{lem:two-simplices}
+  Let $d \ge 3$ and fix a placement in which all placed pairs are less than $2$ apart, such
+  as Lemma~\ref{lem:two-simplices}'s. A graph that adds new vertices and at most $2$ edges,
+  each meeting a new vertex, is realizable extending that placement: every new vertex has
+  degree at most two, and two placed neighbours are less than $2$ apart, so the unit spheres
+  about them meet in a $(d-2)$-sphere. FKS l.~358--359. Lemma~\ref{lem:tail-three} below
+  raises the tail to three edges, which is what the equality budget needs.
+\end{lemma}
+
+\begin{lemma}[The point off the sphere; Case B's pole]
+  \label{lem:basis-apex}
+  \lean{EuclideanGeometry.exists_unit_dist_of_orthogonal_basis, EuclideanGeometry.exists_unit_dist_std_orthonormal_basis}
+  \leanok
+  \uses{lem:sphere-orth}
+  Let $e_1, \dots, e_d$ be pairwise orthogonal with $\lvert e_i\rvert = 1/\sqrt 2$. The point
+  $x = 2c \sum e_i$ with $4dc^2 - 4c - 1 = 0$ is at distance one from every $e_i$, and
+  $\lvert x\rvert^2 = 2dc^2 \ne 1/2$, so $x$ is off $\mathbb{S}^{d-1}$ and differs from every
+  point placed on it. FKS l.~368--369.
+\end{lemma}
+
+\section{The equality geometry}
+\label{sec:equality-geometry}
+
+Three placements that rung 3 left outside its import closure, and that the equality budget
+needs. The library proves each; this project imports them through \texttt{Solution.lean}.
+
+\begin{lemma}[Two apexes and a facet vertex; Lemma R, repaired]
+  \label{lem:two-apices}
+  \lean{EuclideanGeometry.infinite_common_unit_sphere_two_apices}
+  \leanok
+  \uses{lem:two-simplices}
+  Let $d \ge 4$, $\lvert a - b\rvert^2 = 2 + 2/d$, and $\lvert a - c\rvert = \lvert b - c\rvert = 1$.
+  The points at distance one from $a$, $b$ and $c$ form an infinite set: the triangle's
+  squared circumradius is $1/(4 - \lvert a-b\rvert^2) = d/(2(d-1)) < 1$, and the solution set
+  is a sphere of positive radius in a space of dimension $d - 2 \ge 2$ about the
+  circumcentre. The other triples of Lemma~\ref{lem:two-simplices} are equilateral
+  (squared circumradius $1/3$) and are covered by
+  \texttt{infinite\_common\_unit\_sphere\_twoSimplices} in Lemma~\ref{lem:tail-three}.
+
+  The sketch's general form --- pairwise distances at most $D$ with $D^2 < 3$ imply a
+  circumradius below one --- is \textbf{false}: $(-\tfrac34, 0), (\tfrac34, 0),
+  (0, \tfrac1{10})$ has squared circumradius $(229/80)^2$ with $D^2 = 9/4 < 3$, because an
+  obtuse triangle's circumradius is not half its longest side. That is finding A36, which
+  replaced the general lemma by the two special radii that the applications actually need.
+\end{lemma}
+
+\begin{lemma}[Attaching a three-edge tail; Lemma T]
+  \label{lem:tail-three}
+  \lean{SimpleGraph.UnitDistEmbeddable.extend_tail_three, SimpleGraph.infinite_common_unit_sphere_twoSimplices}
+  \leanok
+  \uses{lem:two-apices}
+  Let $d \ge 4$ and fix an injective placement of $s$ in which all placed pairs are less
+  than $2$ apart and every triple of distinct placed points has an infinite common
+  unit-sphere set. A graph that adds new vertices and at most $3$ edges, each meeting a new
+  vertex, is realizable extending that placement. On
+  Lemma~\ref{lem:two-simplices}'s configuration every triple has an infinite common
+  unit-sphere set, by Lemma~\ref{lem:two-apices} for the triples containing both apexes and
+  by the equilateral case otherwise. The placement is built one vertex at a time: whenever
+  the boundary of placed vertices with unplaced neighbours has size at most three, the
+  common unit-sphere set is infinite, so the finitely many placed points can be avoided.
+\end{lemma}
+
+\begin{lemma}[Attaching to a simplex; Lemma P]
+  \label{lem:simplex-attach}
+  \lean{EuclideanGeometry.infinite_sphere_inter_of_regular_simplex, SimpleGraph.UnitDistEmbeddable.extend_of_clique_neighbors}
+  \leanok
+  Let $K$ be a unit regular $d$-simplex in $\mathbb{R}^d$. New vertices, each joined to a
+  set of at most $d - 1$ vertices of $K$ (possibly empty; the sets may overlap), attach
+  injectively to a placement of $K$: each solution set is a sphere of positive dimension
+  about the sub-simplex's circumcentre (A37), so the finitely many placed points are
+  avoided. Neither disjoint neighbourhoods nor the bound $s \le d - 2$ is needed: the
+  packaged form \texttt{extend\_of\_clique\_neighbors} asks only that each outside vertex's
+  neighbourhood be a clique of size at most $d - 1$, and allows outside vertices adjacent to
+  each other. The core \texttt{infinite\_sphere\_inter\_of\_regular\_simplex} covers $k + 1
+  \le d$ points of the simplex.
+\end{lemma}
+
+\section{The induction, with the budget as a parameter}
+\label{sec:induction}
+
+Condensed from rung 3, where the step is proved. Throughout, $d \ge 3$, $G$ is a finite
+graph with at most $b$ edges, and $H$ is its $(d-1)$-core. Every branch of the induction
+step is a lemma about a graph with at most $b$ edges and a hypothesis on $b$, not about
+$g(d)$: rung 3 applies them at $b = g(d)$, rung 4 re-applies the same lemmas at
+$b = m(d)$ on top of $S(d-1)$. Nothing in the step is proved twice.
+
+\begin{lemma}[$S(2)$]
+  \label{lem:S2}
+  \lean{SimpleGraph.fksStatement_two}
+  \leanok
+  \uses{lem:sphere-orth}
+  At most three edges: realizable in $\mathbb{R}^2$. If it also avoids $K_3$ and
+  $K_{1,3} = K_4 - K_3$, it is on $\mathbb{S}^1$. FKS: easy to verify.
+\end{lemma}
+
+\begin{lemma}[Branch A: the core contains $K_{d+2} - K_3$]
+  \label{lem:branch-A}
+  \lean{SimpleGraph.UnitDistEmbeddable.of_core_completeMinusTriangle}
+  \leanok
+  \uses{lem:core, lem:two-simplices, lem:tail}
+  Assume $b \le m(d)$ and $b < m(d) + d - 4$. Then $H$ has exactly the $d + 2$ vertices of
+  that subgraph, since one more core vertex brings at least $d - 1$ further edges. Then
+  either $H = K_{d+2}$, or $H$ misses $s \in \{1, 2, 3\}$ triangle edges, $H$ is placed by
+  Lemma~\ref{lem:two-simplices}, and the tail $t$ satisfies $t + m(d) \le b + s$ (stated
+  additively; natural subtraction is wrong here, A37). At $b = g(d)$, $t \le s - 1 \le 2$,
+  and Lemma~\ref{lem:tail} attaches it. FKS l.~352--359. At $b = m(d)$ the tail reaches
+  $3$, which is where Lemma~\ref{lem:tail-three} takes over
+  (Lemma~\ref{lem:eq-branch-A}).
+\end{lemma}
+
+\begin{lemma}[Branch B: the core contains $K_{d+1}$ and avoids $K_{d+2} - K_3$]
+  \label{lem:branch-B}
+  \lean{SimpleGraph.UnitDistEmbeddable.of_core_clique, SimpleGraph.UnitDistEmbeddable.of_core_containing_clique}
+  \leanok
+  \uses{lem:core, cor:degenerate, lem:basis-apex, lem:simplex-attach}
+  If $b < m(d) + d - 4$, then $H = K_{d+1}$: two core vertices outside the clique overshoot,
+  and one would give $K_{d+2} - K_3$. At most $b - \binom{d+1}{2}$ edges meet the pruned
+  vertices. If some clique vertex has no pruned neighbour, the clique-less-$v$ goes on the
+  sphere as a scaled orthonormal basis, the pruned vertices are re-attached by
+  Corollary~\ref{cor:degenerate}, and $v$ goes to the point of Lemma~\ref{lem:basis-apex}
+  (FKS l.~363--369). Otherwise every clique vertex meets the outside, which at the equality
+  budget exhausts the tail; that case is Lemma~\ref{lem:eq-core-clique}. The review (A37)
+  removed the claim that ``some clique vertex has no outside neighbour'' follows from a
+  cross-edge count at $b = m(d)$: it is false there, and unneeded --- the residual case is
+  placed directly by Lemma~\ref{lem:simplex-attach}.
+\end{lemma}
+
+\begin{lemma}[Branch C, small cores]
+  \label{lem:branch-C-small}
+  \lean{SimpleGraph.SphereEmbeddable.of_fks_small_core}
+  \leanok
+  \uses{lem:cross}
+  If $H$ avoids $K_{d+1}$ and $K_{d+2} - K_3$ and has at most $d + 2$ vertices, then $H$ is
+  on $\mathbb{S}^{d-1}$ by Lemma~\ref{lem:cross} with $k \le 2$. No budget is used.
+  FKS l.~373--380.
+\end{lemma}
+
+\begin{lemma}[Branch C, a universal vertex]
+  \label{lem:branch-C-universal}
+  \lean{SimpleGraph.SphereEmbeddable.of_fks_pole}
+  \leanok
+  \uses{lem:poles}
+  Assume $S(d-1)$, $b - (d + 2) \le g(d-1)$, and that $H$ avoids $K_{d+1}$ and
+  $K_{d+2} - K_3$, has at least $d + 3$ vertices, and has a vertex $v$ adjacent to all the
+  others. Then $H - v$ avoids $K_d$ and $K_{d+1} - K_3$, $S(d-1)$ puts it on
+  $\mathbb{S}^{d-2}$, and $v$ goes to a pole. The budget condition holds at $b = g(d)$ for
+  every $d \ge 3$, and at $b = m(d)$ with slack zero for $d \ge 5$; at $d = 4$ it fails,
+  which is where $K_{3,3,1}$ lives. FKS l.~384--387.
+\end{lemma}
+
+\begin{lemma}[Branch C, two poles]
+  \label{lem:branch-C-poles}
+  \lean{SimpleGraph.SphereEmbeddable.of_fks_poles}
+  \leanok
+  \uses{lem:poles, prop:maxdeg}
+  Assume $S(d-1)$ and $b - (2d - 1) \le g(d-1)$, and that $H$ avoids $K_{d+1}$ and
+  $K_{d+2} - K_3$, has at least $d + 3$ vertices, and no vertex of maximum degree is
+  universal. If $\Delta(H) \le d - 1$, Proposition~\ref{prop:maxdeg} places $H$. Otherwise,
+  for a vertex $v$ of maximum degree and a non-neighbour $w \ne v$ (A37), $H - v - w$ has at
+  most $g(d-1)$ edges. If it avoids $K_d$ and $K_{d+1} - K_3$, $S(d-1)$ and
+  Lemma~\ref{lem:poles} place $H$. FKS l.~388--391.
+\end{lemma}
+
+\begin{lemma}[Case 1 does not occur]
+  \label{lem:case1}
+  \lean{SimpleGraph.not_forall_clique_of_edgeSet_ncard_lt, SimpleGraph.exists_cliqueFree_pair_of_edgeSet_ncard_lt}
+  \leanok
+  Assume $b < m(d) + d - 4$, and the hypotheses in force at this point: $H$ avoids
+  $K_{d+1}$, has at least $d + 3$ vertices and minimum degree at least $d - 1$,
+  $\Delta(H) \ge d$, and each maximum-degree vertex has a non-neighbour $w \ne v$. Then some
+  non-neighbour of $v$ leaves a $d$-clique-free deletion: the core cannot be such that every
+  deletion $H - v - w$ contains a $d$-clique. Two $d$-cliques meeting in at most $d - 2$
+  vertices overshoot by the count $d + m(d) - 4$; meeting in $d - 1$, a further vertex $y$
+  overshoots by $\binom{d+1}{2} + 2d - 3$. Pure counting. FKS l.~395--401.
+\end{lemma}
+
+\begin{lemma}[Case 2: counting]
+  \label{lem:case2-count}
+  \lean{SimpleGraph.fks_case_two_degrees}
+  \leanok
+  If $v$ has maximum degree $\Delta \ge d$ and a non-neighbour $w$ with
+  $H - v - w \supseteq K_{d+1} - K_3$, then $\lvert E(H)\rvert \ge \binom{d+1}{2} - 3 +
+  \Delta + (d - 1)$, which is $m(d) + d - 5$ at $\Delta = d$. So Case 2 does not occur when
+  $b < m(d) + d - 5$: at $b = g(d)$ for $d \ge 5$, and at $b = m(d)$ for $d \ge 6$. At
+  equality, $H - v - w = K_{d+1} - K_3$, $\Delta = d$, and $\deg w = d - 1$. FKS
+  l.~404--406.
+\end{lemma}
+
+\begin{lemma}[Case 2: the equality graphs]
+  \label{lem:case2-place}
+  \lean{SimpleGraph.SphereEmbeddable.of_case_two, SimpleGraph.SphereEmbeddable.of_fks_case_two}
+  \leanok
+  \uses{lem:case2-count, lem:cross, lem:sphere-orth}
+  In the equality configuration of Lemma~\ref{lem:case2-count}, $H$ is on
+  $\mathbb{S}^{d-1}$: either the components of $H[v, w, v_1, v_2, v_3]$ are paths of at most
+  three edges, placed on a great circle with the remaining $K_{d-2}$ on the orthogonal
+  subsphere; or there are three disjoint non-edges and Lemma~\ref{lem:cross} applies with
+  $k = 3$. Rung 3 needs it only at $d = 3$ and $d = 4$; rung 4 at $d \ge 6$ never needs it,
+  since $m(d) < m(d) + d - 5$ there. FKS l.~406--412.
+
+  This is the one place the published proof needed a repair. FKS read the equality count
+  (l.~404--406) as forcing $H - v - w = K_{d+1} - K_3$, $\deg v = d$, $\deg w = d - 1$, and
+  hence $\lvert V(H)\rvert = d + 3$. At $d = 3$ that deduction is false: a vertex joined
+  only to $v$ and $w$ has degree $2 = d - 1$ and survives the pruning, and the library
+  records a seven-vertex counterexample
+  (\texttt{exists\_fks\_case\_two\_extra\_vertex}, \texttt{Extremal/FKS/CaseTwoBoundary.lean},
+  Math finding A38; a library leaf outside this project's import closure). The theorem is
+  unaffected: at $d = 3$ the equality configuration makes $H - v - w$ a star $K_{1,3}$ plus
+  isolated vertices, whose centre $c$ has degree $3 = \Delta$ and is not adjacent to $v$,
+  and $H - c - v$ has only two edges, so $S(2)$ and the poles place $H$ --- a
+  contradiction. At $d \ge 4$ an extra vertex would need $d - 1 \ge 3$ neighbours among
+  $\{v, w\}$, so the deduction holds. The bridge \texttt{SphereEmbeddable.of\_fks\_case\_two}
+  (\texttt{Extremal/FKS/CaseTwoBridge.lean}) implements this repair.
+\end{lemma}
+
+\begin{lemma}[The step]
+  \label{lem:step}
+  \lean{SimpleGraph.SphereEmbeddable.of_fks_core, SimpleGraph.SphereEmbeddable.of_core_maximal, SimpleGraph.fksStatement_succ, SimpleGraph.fksBudget_le_pred_add, SimpleGraph.fksBudget_le_pred_add_two_mul, SimpleGraph.fksBudget_lt_choose, SimpleGraph.fksBudget_lt_branch_count}
+  \leanok
+  \uses{lem:core, cor:degenerate, lem:branch-A, lem:branch-B, lem:branch-C-small,
+    lem:branch-C-universal, lem:branch-C-poles, lem:case1, lem:case2-count, lem:case2-place}
+  For $d \ge 3$, $S(d-1)$ implies $S(d)$. Take $H$ to be the maximal core. If it is empty,
+  Corollary~\ref{cor:degenerate} places $G$; if it is on the sphere,
+  Corollary~\ref{cor:degenerate} re-attaches the rest. If $H$ contains $K_{d+2} - K_3$,
+  Branch A applies; if it contains $K_{d+1}$, Branch B; otherwise the spherical dispatch runs
+  Branch C small, then Proposition~\ref{prop:maxdeg}, then the universal-vertex and
+  two-pole branches, with Case 1 excluded by Lemma~\ref{lem:case1} and Case 2 placed through
+  the repaired bridge of Lemma~\ref{lem:case2-place}. Arithmetic facts used:
+  $g(d) - (d + 2) \le g(d-1)$ and $g(d) - (2d - 1) \le g(d-1)$ for $d \ge 3$, and
+  $g(d) < m(d) + d - 4$ for $d \ge 3$. The induction is a two-parameter recursion, over $d$
+  and over the core, so this node only dispatches cases.
+\end{lemma}
+
+\begin{theorem}[Frankl--Kupavskii--Swanepoel, Theorem 3]
+  \label{thm:fks}
+  \lean{SimpleGraph.fksStatement, SimpleGraph.unitDistEmbeddable_of_ncard_edgeSet_lt}
+  \leanok
+  \uses{lem:S2, lem:step, lem:complete-lower}
+  For $d \ge 4$, every finite simple graph with fewer than $\binom{d+2}{2}$ edges is
+  realizable in $\mathbb{R}^d$; with Lemma~\ref{lem:complete-lower}, $f(d) = \binom{d+2}{2}$.
+  FKS l.~91. The library assembles $S(d)$ for every $d \ge 2$ from $S(2)$ and the step;
+  rung 4 uses $S(d-1)$ inside the equality-budget spherical branch
+  (Lemma~\ref{lem:eq-core-spherical}).
+\end{theorem}
+
+\section{The equality budget in the branches}
+\label{sec:equality-budget}
+
+The branches of Section~\ref{sec:induction}, re-run at $b = m(d)$ for $d \ge 6$. Every count
+in the induction step has excess $d - 4$ over the budget, except Case 2 with $d - 5$ (A23),
+so at $b = m(d)$ each branch closes with the new geometry of
+Section~\ref{sec:equality-geometry}. Each lemma below states
+its budget hypotheses explicitly, in the form the library proves them.
+
+\begin{lemma}[The spherical branch at $b = m(d)$]
+  \label{lem:eq-core-spherical}
+  \lean{SimpleGraph.SphereEmbeddable.of_fks_core_le_choose}
+  \leanok
+  \uses{lem:step, lem:branch-C-small, prop:maxdeg, lem:branch-C-universal, lem:branch-C-poles, lem:case1}
+  Let $d \ge 6$, and let $G$ have minimum degree at least $d - 1$, at most $m(d)$ edges,
+  no $K_{d+1}$ and no $K_{d+2} - K_3$. Then $G$ is on $\mathbb{S}^{d-1}$. The proof is
+  Lemma~\ref{lem:step}'s spherical dispatch with $S(d-1)$ in place: small cores by
+  Lemma~\ref{lem:branch-C-small}, then Proposition~\ref{prop:maxdeg}, then the two pole
+  branches, whose budget conditions read $m(d) - (d+2) \le g(d-1)$, with equality, and
+  $m(d) - (2d-1) \le g(d-1)$, with slack; Case 1 is
+  excluded because $m(d) < m(d) + d - 4$, and Case 2 cannot arise since the equality count
+  overshoots $m(d)$ by $d - 5 > 0$.
+\end{lemma}
+
+\begin{lemma}[Branch A at $b = m(d)$: place, or the core is complete]
+  \label{lem:eq-branch-A}
+  \lean{SimpleGraph.unitDistEmbeddable_or_isNClique_of_core_completeMinusTriangle}
+  \leanok
+  \uses{lem:branch-A, lem:core, lem:tail-three, lem:two-simplices}
+  Let $d \ge 4$ and let $H$ be a core containing $K_{d+2} - K_3$, with
+  $b \le m(d)$ (A37 adds this to $b < m(d) + d - 4$) and minimum degree at least $d - 1$.
+  Then either $G$ is realizable in $\mathbb{R}^d$, or $H$ is a clique on exactly $d + 2$
+  vertices. In the first alternative $H$ misses $s \in \{1, 2, 3\}$ triangle edges and is
+  placed by Lemma~\ref{lem:two-simplices}; the tail is counted additively, $t + m(d) \le b + s$
+  with $t \le s \le 3$, and Lemma~\ref{lem:tail-three} attaches it --- every triple of
+  placed points has an infinite common unit-sphere set, which is what three tail edges need.
+\end{lemma}
+
+\begin{lemma}[Branch B at $b = m(d)$: the clique core]
+  \label{lem:eq-core-clique}
+  \lean{SimpleGraph.UnitDistEmbeddable.of_core_containing_clique_le_choose, SimpleGraph.UnitDistEmbeddable.of_core_clique_le_choose, SimpleGraph.UnitDistEmbeddable.of_core_clique_without_external_neighbor}
+  \leanok
+  \uses{lem:branch-B, lem:core, cor:degenerate, lem:basis-apex, lem:simplex-attach}
+  Three forms, in the order the library layers them. First, a core containing $K_{d+1}$,
+  avoiding $K_{d+2} - K_3$, with minimum degree at least $d - 1$ inside it,
+  $b \le m(d)$ and $b < m(d) + d - 4$, is exactly $K_{d+1}$: a larger core overshoots the
+  count (FKS l.~361). Second, for a maximal core $H = K_{d+1}$ of a graph with at most
+  $\binom{d+1}{2} + (d + 1) = m(d)$ edges, $G$ is realizable in $\mathbb{R}^d$. If some
+  clique vertex $v$ has no outside neighbour, $K_{d+1} - v$ goes on the sphere,
+  Corollary~\ref{cor:degenerate} re-attaches the pruned vertices inside the clique, and $v$
+  goes to the off-sphere point of Lemma~\ref{lem:basis-apex}; this arm does not consult the
+  tail budget. Otherwise every clique vertex meets the outside: the $d + 1$ cross edges
+  exhaust the tail, every outside vertex's neighbours lie in the clique and number at most
+  $d - 2$ --- a $(d-1)$-st would make it a core vertex after all --- and
+  Lemma~\ref{lem:simplex-attach} places the outside vertices at once. The review (A37)
+  removed the earlier claim that the first arm follows from a cross-edge count at this
+  budget; both arms are proved, and the branch returns a placement, not a dichotomy.
+\end{lemma}
+
+\begin{lemma}[A clique exhausting the budget]
+  \label{lem:eq-clique-exhausts}
+  \lean{SimpleGraph.nonempty_iso_completeGraph_of_isNClique}
+  \leanok
+  If $G$ has an $n$-clique on a vertex set $s$, at most $\binom{n}{2}$ edges in total, and
+  no isolated vertex, then every edge lies inside $s$: an edge leaving $s$ would exceed the
+  budget. So $G = K_n$ on all of $V$, up to isomorphism. This is how
+  Branch~A's clique alternative becomes the theorem's conclusion: a $K_{d+2}$ core with
+  $m(d)$ edges and no isolated vertex leaves no room for any other edge or vertex.
+\end{lemma}
+
+\section{Uniqueness at the complete-graph edge count}
+
+\begin{theorem}[Uniqueness for $d \ge 6$]
+  \label{thm:uniqueness}
+  \lean{SimpleGraph.nonempty_iso_completeGraph_of_not_unitDistEmbeddable}
+  \leanok
+  \uses{lem:core, lem:complete-lower, lem:eq-core-spherical, lem:eq-branch-A, lem:eq-core-clique, lem:eq-clique-exhausts}
+  Let $d \ge 6$. Every finite simple graph with exactly $\binom{d+2}{2}$ edges, with no
+  isolated vertex, and with no unit-distance representation in $\mathbb{R}^d$, is isomorphic
+  to $K_{d+2}$. The hypothesis is not vacuous by Lemma~\ref{lem:complete-lower}. The proof
+  takes the maximal core $H$. If $H$ contains $K_{d+2} - K_3$, Lemma~\ref{lem:eq-branch-A}
+  either places $G$ --- contradicting the hypothesis --- or makes $H$ a $(d+2)$-clique, and
+  Lemma~\ref{lem:eq-clique-exhausts} leaves nothing outside it. Otherwise $H$ avoids
+  $K_{d+2} - K_3$, and the proof derives the placement that the hypothesis forbids: if $H$
+  also avoids $K_{d+1}$, Lemma~\ref{lem:eq-core-spherical} places $G$ on the sphere; if
+  $H$ contains $K_{d+1}$, Lemma~\ref{lem:eq-core-clique} places $G$ in $\mathbb{R}^d$.
+  Every
+  route ends in a placement, so the hypothesis forces the clique alternative. To our
+  knowledge this equality case has not previously been stated; the argument is the
+  Frankl--Kupavskii--Swanepoel induction run at $b = m(d)$, with the corrections A36 and
+  A37 recorded at Lemma~\ref{lem:two-apices}, Lemma~\ref{lem:simplex-attach} and
+  Section~\ref{sec:equality-budget}. At $d = 5$ the same induction also closes: Case 2's
+  equality graph is impossible by maximum degree, so uniqueness at $d = 5$ needs no new
+  coordinates (A37); only $d = 4$ genuinely fails, where $K_{3,3,1}$ escapes.
+\end{theorem}
+
+\begin{theorem}[The Palomar statement]
+  \label{thm:palomar}
+  \lean{EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete, EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete.proof, EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete.witness, EdgeThresholdUniqueness.Palomar.target}
+  \leanok
+  \uses{thm:uniqueness, def:representable}
+  The frozen statement quantifies over $d \ge 6$ and graphs $G$ on \texttt{Fin n}: exactly
+  $\binom{d+2}{2}$ edges, no isolated vertex, no unit-distance representation in
+  $\mathbb{R}^d$ (Definition~\ref{def:representable}'s inlined predicate), concluding
+  $\texttt{Nonempty} (G \simeq_g K_{d+2})$. Its proof sibling specializes
+  Theorem~\ref{thm:uniqueness} and reads the inlined predicate as
+  \texttt{UnitDistEmbeddable}; \texttt{Solution.lean} restates it for the Comparator as
+  \texttt{EdgeThresholdUniqueness.Palomar.target}. The witness records that at $d = 6$ the
+  hypotheses hold together: $K_8$ has $28$ edges, no isolated vertex, and no representation
+  in $\mathbb{R}^6$.
+\end{theorem}
