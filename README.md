@@ -21,7 +21,7 @@ isolated vertex, and no unit-distance representation in `ℝᵈ` is isomorphic t
 | Library | [GraphDimension](https://github.com/Dishah3241/GraphDimension), which Lake fetches at the revision pinned in `lake-manifest.json`; the proof is `SimpleGraph.nonempty_iso_completeGraph_of_not_unitDistEmbeddable` there |
 | Statement review | the statement was written twice, independently, and the two versions are proved equivalent in Lean (`EdgeThresholdUniqueness/Stage1/`); the owner signed the [Compass list](docs/compass.md) |
 | Review | an independent, read-only review ([record](docs/review-2026-09-24.md)) |
-| Blueprint | `blueprint/src/content.tex`, checked against the Lean by `leanblueprint checkdecls` |
+| Blueprint | [web](https://dishah3241.github.io/EdgeThresholdUniqueness/), built by CI from `blueprint/src/content.tex` and checked against the Lean by `leanblueprint checkdecls` |
 | `formal-conjectures` link | none: the statement is not in `formal-conjectures` |
 | Palomar entry | not yet submitted |
 
