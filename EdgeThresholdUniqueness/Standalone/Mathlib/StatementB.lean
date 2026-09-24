@@ -130,3 +130,17 @@ def edgeThresholdUniqueness.dropHnonrealizable : Prop :=
     Nonempty (G ≃g SimpleGraph.completeGraph (Fin (d + 2))))
 
 end EdgeThresholdUniqueness.StatementB
+
+/-!
+## Formal proof
+
+Proved in `StatementBProof`.
+
+* `separating` → `separating.proof`
+* `edgeThresholdUniqueness` → `edgeThresholdUniqueness.proof`
+* `witness` → `witness.proof`
+* `dropHdim` → `dropHdim.proof`
+* `dropHedges` → `dropHedges.proof`
+* `dropHneighbors` → `dropHneighbors.proof`
+* `dropHnonrealizable` → `dropHnonrealizable.proof`
+-/

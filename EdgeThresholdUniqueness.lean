@@ -9,5 +9,6 @@ module
 # EdgeThresholdUniqueness
 
 This root re-exports nothing and nothing imports it. `lake build` compiles every module under the
-`EdgeThresholdUniqueness.*` glob directly, so the glob — not this file — decides what is built and audited.
+`EdgeThresholdUniqueness.*` glob directly, so the glob — not this file — decides what is built
+and audited.
 -/

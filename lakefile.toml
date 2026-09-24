@@ -93,6 +93,12 @@ root = "scripts.Documentation"
 name = "layering"
 root = "scripts.Layering"
 
+# The shared graph-dimension library (Math ADR 0004). A sibling path, as in Erdos1007Dim5
+# at 931e05e. The 40-character pin comes at publication.
+[[require]]
+name = "GraphDimension"
+path = "../GraphDimension"
+
 # `leanblueprint checkdecls` runs this to verify every `\lean{...}` in blueprint/src/content.tex
 # names a declaration that actually exists. It is the drift protection the inline-annotation
 # approach gets for free and a LaTeX blueprint does not.

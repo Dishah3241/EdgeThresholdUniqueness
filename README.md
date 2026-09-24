@@ -1,10 +1,12 @@
 # Uniqueness of K_{d+2} at C(d+2,2) edges for d >= 6
 
-A Lean certification of a result already solved in the human literature.
+For every natural number `d ≥ 6`, a finite simple graph with exactly `C(d + 2, 2)` edges, with no
+isolated vertex, and with no unit-distance representation in Euclidean `d`-space, is isomorphic to
+`K_{d+2}`.
 
 | | |
 |---|---|
-| Stage | 1 — statement freeze |
+| Stage | proved statement; blueprint checkdecls is Stage 2 |
 | Palomar entry | not yet submitted |
 | `formal_proof` PR | not yet opened |
 | Mathlib PR | not yet opened |

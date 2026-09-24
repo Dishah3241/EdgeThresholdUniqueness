@@ -10,10 +10,10 @@ import Lean
 /-!
 # Audit standalone Mathlib modules
 
-Reader-facing modules in `EdgeThresholdUniqueness.Standalone.Mathlib` state results so that a reader can
-check them knowing only Mathlib, and compile them against a bare Mathlib. Sibling modules ending
-in `Proof` and modules under `Support/` are proof plumbing and are excluded as audit roots, but a
-reader-facing module may not import them.
+Reader-facing modules in `EdgeThresholdUniqueness.Standalone.Mathlib` state results so that a
+reader can check them knowing only Mathlib, and compile them against a bare Mathlib. Sibling
+modules ending in `Proof` and modules under `Support/` are proof plumbing and are excluded as
+audit roots, but a reader-facing module may not import them.
 
 This executable walks the transitive imports recorded in the compiled artifacts and rejects any
 module under a forbidden root. It reads oleans rather than source text, so it sees what was
@@ -23,7 +23,8 @@ actually elaborated. Run it after `lake build`.
 open Lean
 
 /-- The directory whose non-proof modules must rest on Mathlib alone. -/
-private def standaloneMathlibDir : System.FilePath := "EdgeThresholdUniqueness" / "Standalone" / "Mathlib"
+private def standaloneMathlibDir : System.FilePath :=
+  "EdgeThresholdUniqueness" / "Standalone" / "Mathlib"
 
 private def pathToModule (path : System.FilePath) : Name :=
   (path.withExtension "").components.foldl (fun name part => Name.mkStr name part) Name.anonymous

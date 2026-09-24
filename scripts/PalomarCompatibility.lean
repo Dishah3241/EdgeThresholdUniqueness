@@ -26,7 +26,7 @@ private structure AuditConfig where
 
 private def defaultConfig : AuditConfig where
   moduleName := `EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness
-  root := `EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.SmallPrimesCoprime
+  root := `EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete
 
 private def AuditConfig.privatePrefix (config : AuditConfig) : Name :=
   ("_private." ++ config.moduleName.toString).toName

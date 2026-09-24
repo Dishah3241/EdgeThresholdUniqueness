@@ -8,7 +8,7 @@ module
 public import EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniquenessProof
 
 /-!
-# Uniqueness of K_{d+2} at C(d+2,2) edges for d >= 6
+# Uniqueness of `K_{d+2}` at `C(d+2, 2)` edges
 
 Connects Palomar's advertised declaration to the proof. This module contains no mathematics: it
 restates the theorem Comparator checks and discharges it from the development.
@@ -21,9 +21,11 @@ public section
 
 namespace EdgeThresholdUniqueness.Palomar
 
-/-- Any two distinct elements of `{2, 3, 5}` are coprime. -/
+/-- For every natural number `d ≥ 6`, every finite simple graph with exactly
+`C(d + 2, 2)` edges, with no isolated vertex, and with no unit-distance
+representation in Euclidean `d`-space, is isomorphic to `K_{d+2}`. -/
 theorem target :
-    EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.SmallPrimesCoprime :=
-  EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.SmallPrimesCoprime.proof
+    EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete :=
+  EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete.proof
 
 end EdgeThresholdUniqueness.Palomar

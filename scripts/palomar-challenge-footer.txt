@@ -2,9 +2,11 @@
 namespace EdgeThresholdUniqueness.Palomar
 
 set_option warningAsError false in
-/-- Any two distinct elements of `{2, 3, 5}` are coprime. -/
+/-- For every natural number `d ≥ 6`, every finite simple graph with exactly
+`C(d + 2, 2)` edges, with no isolated vertex, and with no unit-distance
+representation in Euclidean `d`-space, is isomorphic to `K_{d+2}`. -/
 theorem target :
-    EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.SmallPrimesCoprime := by
+    EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete := by
   sorry
 
 end EdgeThresholdUniqueness.Palomar

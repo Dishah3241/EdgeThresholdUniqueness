@@ -20,7 +20,8 @@ the complete graph `K_{d+2}`.
 
 A unit-distance representation is an injective placement of the vertices into
 `EuclideanSpace ℝ (Fin d)` under which every edge has length `1`. A non-edge may also have
-length `1`. This is the Erdős–Harary–Tutte notion of realizability in `ℝᵈ`: the edge set is a
+length `1`. This is the Erdős–Harary–Tutte notion of realizability in `ℝᵈ`: the edge set
+is a
 subset of the unit-distance pairs, not necessarily the whole set of them.
 -/
 
@@ -78,7 +79,8 @@ def UnitDistanceRepresentable.separating : Prop :=
     (∀ u v : Fin 4, G.Adj u v ↔ ((u = 0 ∨ v = 0) ∧ u ≠ v)) ∧
     G.Adj 0 1 ∧
     ∃ f : Fin 4 → EuclideanSpace ℝ (Fin 1),
-      f 0 = !₂[(0 : ℝ)] ∧ f 1 = !₂[(1 : ℝ)] ∧ f 2 = !₂[(1 : ℝ)] ∧ f 3 = !₂[(1 : ℝ)] ∧
+      f 0 = !₂[(0 : ℝ)] ∧ f 1 = !₂[(1 : ℝ)] ∧
+      f 2 = !₂[(1 : ℝ)] ∧ f 3 = !₂[(1 : ℝ)] ∧
       ¬ Function.Injective f ∧
       (∀ u v : Fin 4, G.Adj u v → dist (f u) (f v) = 1) ∧
       ¬ UnitDistanceRepresentable G 1)
@@ -176,3 +178,17 @@ def UniqueKComplete.dropHrep : Prop :=
       Nonempty (G ≃g completeGraph (Fin (d + 2)))
 
 end EdgeThresholdUniqueness.StatementA
+
+/-!
+## Formal proof
+
+Proved in `StatementAProof`.
+
+* `separating` → `separating.proof`
+* `UniqueKComplete` → `UniqueKComplete.proof`
+* `witness` → `witness.proof`
+* `dropHd` → `dropHd.proof`
+* `dropHcard` → `dropHcard.proof`
+* `dropHdeg` → `dropHdeg.proof`
+* `dropHrep` → `dropHrep.proof`
+-/

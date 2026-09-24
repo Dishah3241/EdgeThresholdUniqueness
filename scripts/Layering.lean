@@ -59,6 +59,8 @@ private def subjectRoots : Array (Name × String) := #[
 private def leafRoots : Array Name := #[
   `EdgeThresholdUniqueness.Examples,
   `EdgeThresholdUniqueness.Standalone,
+  -- Equivalence imports the two standalone statements, so it is a later leaf.
+  `EdgeThresholdUniqueness.Stage1,
 ]
 
 private def isLocalTest (name : Name) : Bool :=

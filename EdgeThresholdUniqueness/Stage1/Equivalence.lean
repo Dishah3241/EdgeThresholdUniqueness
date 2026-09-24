@@ -5,6 +5,7 @@ Authors: Dishant Shah
 -/
 module
 
+public import EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness
 public import EdgeThresholdUniqueness.Standalone.Mathlib.StatementA
 public import EdgeThresholdUniqueness.Standalone.Mathlib.StatementB
 public import Mathlib.Analysis.InnerProductSpace.PiL2
@@ -78,5 +79,11 @@ theorem edgeThresholdUniqueness_of_uniqueKComplete
 theorem uniqueKComplete_iff_edgeThresholdUniqueness :
     StatementA.UniqueKComplete ↔ StatementB.edgeThresholdUniqueness :=
   ⟨edgeThresholdUniqueness_of_uniqueKComplete, uniqueKComplete_of_edgeThresholdUniqueness⟩
+
+/-- The inline statement has the same body as `StatementA.UniqueKComplete`. -/
+theorem inlineIffStatementA :
+    Standalone.Mathlib.InlineEdgeThresholdUniqueness.UniqueKComplete ↔
+      StatementA.UniqueKComplete :=
+  Iff.rfl
 
 end EdgeThresholdUniqueness

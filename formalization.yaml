@@ -1,10 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/v0.4.schema.json
-# formalization.yaml v0.4, written to Palomar's stricter rules. Before submitting:
-# - replace every {{…}};
-# - validate against the v0.4 schema and Palomar's own loader;
-# - take every model name from a run log, never from memory.
-# Worked example: projects/Erdos1007/formalization.yaml.
-# Rules and commands: the Math workspace's docs/research/2026-09-22-palomar-submission-path.md.
+# formalization.yaml v0.4, written to Palomar's stricter rules. Validate it against the v0.4
+# schema and Palomar's own loader after every edit, and take every model name from a run log.
 version: "v0.4"
 
 project:
@@ -12,7 +8,15 @@ project:
   # The registry abstract, at most 10,000 characters: the mathematical content and the principal
   # results, readable without the repository.
   description: >-
-    Any two distinct elements of `{2, 3, 5}` are coprime.
+    For every natural number d ≥ 6, every finite simple graph on Fin n with exactly
+    C(d + 2, 2) edges, with no isolated vertex, and with no injective placement of its vertices
+    into Euclidean d-space under which every edge has length 1, is isomorphic to the complete
+    graph K_{d+2}. A non-edge may also have length 1. The proof is
+    SimpleGraph.nonempty_iso_completeGraph_of_not_unitDistEmbeddable in the GraphDimension
+    library, specialized at V = Fin n. Frankl, Kupavskii and Swanepoel (2020) prove the strict
+    inequality: for d > 3, fewer than C(d + 2, 2) edges yields such a placement. This statement
+    is the equality case for d ≥ 6, with the no-isolated-vertex hypothesis, so the conclusion is
+    isomorphism with K_{d+2} itself.
   authors:                 # humans only; credit models under `automation`
     - "Dishant Shah"
   responsible_maintainers:
@@ -20,35 +24,67 @@ project:
   license: "Apache-2.0"    # must match the root LICENSE exactly
 
 classification:            # one to eight codes from Palomar's taxonomy snapshots
-  arxiv: ["{{ARXIV_CATEGORY}}"]     # e.g. "math.CO"
-  msc2020: ["{{MSC2020_CODE}}"]     # e.g. "05C35"; may be empty
+  # The local TeX of arXiv:1802.03092 has no MSC line. These codes are the ones recorded for
+  # that paper in projects/FKSEdgeThreshold/formalization.yaml.
+  arxiv: ["math.CO", "math.MG"]
+  msc2020: ["05C62", "52C10"]
 
 # `type` is one of paper, book, web discussion, folklore, original-proof or other. At least one
 # source must formalize, adapt or independently prove the result, which makes it source-based.
 sources:
-  - title: "{{SOURCE_TITLE}}"
+  - title: "Stage 0 — does the FKS induction give uniqueness at C(d+2,2) edges?"
+    id: "file:///Users/dishant/Code/Math/docs/research/2026-09-22-stage0-end-problem-uniqueness.md"
+    type: "other"
+    location: >-
+      The sketch as a whole; the equality-count case analysis and the calibration for d = 5 and
+      d ≥ 6
+    relationship: "adapts"
+    author_endorsement: "n/a"
+    note: >-
+      Informal argument that the FKS induction, with the budget raised to C(d + 2, 2), leaves
+      only K_{d+2} plus isolated vertices. The sketch states this for every d ≥ 5. The frozen
+      statement is the d ≥ 6 case, with the no-isolated-vertex hypothesis. Run
+      20260922-160618-c2949ba8.
+  - title: "Independent check of the end-problem sketch"
+    id: "file:///Users/dishant/Code/Math/docs/research/2026-09-22-independent-check-end-problem.md"
+    type: "other"
+    location: >-
+      The branch table for d ≥ 6, and the numerical script
+      docs/research/2026-09-22-independent-check-end-problem.py
+    relationship: "independently-proves"
+    author_endorsement: "n/a"
+    note: >-
+      Re-derivation of each branch against the TeX proof of Frankl–Kupavskii–Swanepoel
+      Theorem 3. The verdict in that note is that the argument holds for every d ≥ 6, using
+      S(d − 1) as written. It treats d = 5 as the Chaffee–Noble classification and does not
+      re-check the d = 5 Case 2 construction. The check is informal.
+  - title: "Embedding graphs in Euclidean space"
     authors:
-      - "{{SOURCE_AUTHORS}}"
-    id: "{{SOURCE_DOI_OR_URL}}"
+      - "Nóra Frankl"
+      - "Andrey Kupavskii"
+      - "Konrad J. Swanepoel"
+    id: "https://arxiv.org/abs/1802.03092"
     type: "paper"
-    location: "{{SOURCE_PINPOINT}}"
-    relationship: "formalizes"
+    location: >-
+      J. Combin. Theory Ser. A 171 (2020) 105146; arXiv:1802.03092, main.tex, the definition of
+      f(d) at line 82 and the theorem labeled d+2 choose 2 at line 91
+    relationship: "background"
     author_endorsement: "not-contacted"
     note: >-
-      The proof of record, cited at its exact pinpoint.
+      The inequality theorem this statement builds on: for d > 3, fewer than C(d + 2, 2) edges
+      yields a unit-distance representation in R^d. The paper records that K_{d+2} is not
+      realizable, so f(d) ≤ C(d + 2, 2), and cites Chaffee–Noble for the equality cases d = 4
+      and d = 5. Uniqueness for d ≥ 6 is not that theorem.
 
-# Prior or parallel formalizations. When the statement came from formal-conjectures, that
-# repository belongs here, pinned to a commit.
-related_formalizations:
-  - id: "https://github.com/google-deepmind/formal-conjectures/blob/{{FC_COMMIT}}/{{FC_PATH}}"
-    relationship: "builds-on"
-    note: >-
-      The formal statement is this file's {{FC_DECLARATION}}, reproduced with its supporting
-      definitions inlined so that it depends on Mathlib alone.
+# The cached formal-conjectures tree has no declaration of this statement.
+related_formalizations: []
 
 status:
   scope: >-
-    {{SCOPE}}
+    Finite simple graphs SimpleGraph (Fin n), every natural number d ≥ 6, exactly
+    C(d + 2, 2) edges, no isolated vertex, and no unit-distance representation in Euclidean
+    d-space. The conclusion is isomorphism with K_{d+2}. The inequality theorem, the spherical
+    clause, and the cases d < 6 are out of scope.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -61,27 +97,75 @@ status:
 
 fidelity:
   divergences: >-
-    {{DIVERGENCES}}
+    The Stage 0 sketch concludes that, for every d ≥ 5, the only graphs with C(d + 2, 2) edges
+    and no placement in R^d are K_{d+2} together with isolated vertices, and it treats d = 5 by
+    a Case 2 construction together with the Chaffee–Noble citation in the FKS source. The
+    independent check states the counting argument for every d ≥ 6 and sets d = 5 aside. The
+    frozen statement and GraphDimension's
+    nonempty_iso_completeGraph_of_not_unitDistEmbeddable are the d ≥ 6 case. The no-isolated-vertex
+    hypothesis makes the conclusion isomorphism with K_{d+2} itself; a graph that is K_{d+2}
+    plus an isolated vertex has the same number of edges and still has no placement, and it
+    fails that hypothesis. Statement A names the placement condition UnitDistanceRepresentable.
+    Statement B uses HasUnitDistanceRepresentation, the inhabitant of the library embedding.
+    EdgeThresholdUniqueness.Stage1.Equivalence proves the two claims agree, and
+    inlineIffStatementA identifies the inlined claim with Statement A by rfl. The manager's
+    commit c3f8fd3 marks Statement B's definitions @[expose], with no change of meaning, so an
+    importer can unfold them.
 
 automation:
-  # One entry per phase. `method` is manual, copilot, agent, autonomous or other. Only 3 of
-  # Palomar's first 36 entries disclosed AI assistance; this workspace discloses it every time.
+  # One entry per phase. `method` is manual, copilot, agent, autonomous or other.
+  # Model strings are the output of harness/run-model on the run id.
   methods:
     - method: "agent"
-      models: ["{{MODEL_FROM_RUN_LOG}}"]
-      framework: "{{HARNESS_AND_VERSION}}"
+      models: ["Grok 4.7 500K Extra High Fast"]
+      framework: "Cursor"
       tool_setup: >-
-        {{PHASE}}: what this phase produced, and its run ids.
+        Statement A. Run 20260923-182312-409a43fe wrote
+        EdgeThresholdUniqueness/Standalone/Mathlib/StatementA.lean: the claim UniqueKComplete,
+        the predicate UnitDistanceRepresentable, the separating example, the witness, and the
+        four drop companions.
+    - method: "agent"
+      models: ["gpt-6-astra"]
+      framework: "Codex"
+      tool_setup: >-
+        Statement B. Run 20260923-182314-97577ecc wrote
+        EdgeThresholdUniqueness/Standalone/Mathlib/StatementB.lean.
+    - method: "agent"
+      models: ["glm-5.3-flash"]
+      framework: "pi"
+      tool_setup: >-
+        Equivalence. Run 20260923-203235-95e329e4 began
+        EdgeThresholdUniqueness.Stage1.Equivalence, and run 20260923-210229-2ed318a5 finished
+        the proof that Statement A and Statement B agree.
+    - method: "agent"
+      models: ["not evidenced"]
+      framework: "not evidenced"
+      tool_setup: >-
+        Manager fix. Commit c3f8fd3 marks Statement B's definitions with @[expose], as Statement
+        A already does, so the Stage 1 equivalence can unfold them. The commit message records
+        no change of meaning. harness/run-model was not applied to a run id for this commit, so
+        no model name is recorded here.
+    - method: "agent"
+      models: ["not evidenced"]
+      framework: "Cursor"
+      tool_setup: >-
+        This repository: the inlined statement, the proof siblings, Solution.lean, and the
+        gates. Run 20260923-211058-10818035. harness/run-model prints "not evidenced" for that
+        run id.
   spend_usd: "subscription-based usage"
   notes: >-
-    {{PROCESS}}: who chose the target, who signed off the statement's meaning, and what a human
-    actually read.
+    The proof lives in the GraphDimension library, required as the sibling path dependency
+    ../GraphDimension. The 40-character pin comes at publication. The owner has not signed off
+    the statement; Compass comes after this integration. Model names above are the output of
+    harness/run-model, except the two entries marked not evidenced.
 
 limitations: >-
-  {{LIMITATIONS}}
+  The frozen statement is the d ≥ 6 equality case for finite simple graphs with no isolated
+  vertex. It does not include d = 5, the inequality theorem, or the spherical clause. The proof
+  depends on GraphDimension at the sibling path ../GraphDimension, not at a pinned revision.
 
 review:
-  status: "{{REVIEW_STATUS}}"    # unchecked, agent-reviewed, self-assessed, peer-reviewed or author-verified
+  status: "unchecked"    # unchecked, agent-reviewed, self-assessed, peer-reviewed or author-verified
   reviewers: []
   notes: >-
-    {{REVIEW_NOTES}}
+    The owner has not signed off the statement. Compass comes after this integration.
