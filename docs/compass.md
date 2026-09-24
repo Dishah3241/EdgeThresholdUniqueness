@@ -10,7 +10,9 @@ The project declarations are in
 `EdgeThresholdUniqueness/Standalone/Mathlib/InlineEdgeThresholdUniqueness.lean`, namespace
 `EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness`. Rows 11–14 are Mathlib's.
 
-**Owner sign-off: not yet given.** Any change to a row cancels a sign-off.
+**Owner sign-off: confirmed on 2026-09-24 for rows 1–14** (the owner, in the Math driver session: "do 1",
+answering the request to sign this list), on the list as committed at `5d4621b`. This freezes the
+statement. Any change to a row cancels it.
 
 - The owner chose the statement's form on 2026-09-23: every `d ≥ 6`, the hypothesis "no
   representation in `ℝᵈ`" rather than "dimension exactly `d + 1`", and no isolated vertex with the
