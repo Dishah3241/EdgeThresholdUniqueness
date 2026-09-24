@@ -19,7 +19,7 @@ Frankl, Kupavskii and Swanepoel, *Embedding graphs in Euclidean space*, JCTA 171
 The uniqueness assertion here is the additional rung-4 claim, not that theorem.
 -/
 
-public section
+@[expose] public section
 
 namespace EdgeThresholdUniqueness.StatementB
 
