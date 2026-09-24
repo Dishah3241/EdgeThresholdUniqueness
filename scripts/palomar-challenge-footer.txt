@@ -1,0 +1,10 @@
+
+namespace EdgeThresholdUniqueness.Palomar
+
+set_option warningAsError false in
+/-- Any two distinct elements of `{2, 3, 5}` are coprime. -/
+theorem target :
+    EdgeThresholdUniqueness.Standalone.Mathlib.InlineEdgeThresholdUniqueness.SmallPrimesCoprime := by
+  sorry
+
+end EdgeThresholdUniqueness.Palomar
