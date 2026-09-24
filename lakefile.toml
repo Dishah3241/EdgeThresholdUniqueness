@@ -93,11 +93,12 @@ root = "scripts.Documentation"
 name = "layering"
 root = "scripts.Layering"
 
-# The shared graph-dimension library (Math ADR 0004). A sibling path, as in Erdos1007Dim5
-# at 931e05e. The 40-character pin comes at publication.
+# The shared graph-dimension library (Math ADR 0004), pinned to a 40-character revision so this
+# repository's proof is reproducible. A library bump is its own reviewed change.
 [[require]]
 name = "GraphDimension"
-path = "../GraphDimension"
+git = "https://github.com/Dishah3241/GraphDimension"
+rev = "103e26bc705a61f93ef7985c74498668cbdf7e01"
 
 # `leanblueprint checkdecls` runs this to verify every `\lean{...}` in blueprint/src/content.tex
 # names a declaration that actually exists. It is the drift protection the inline-annotation
